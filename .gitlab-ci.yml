@@ -1,0 +1,11 @@
+verification:
+  image: python:3.10
+  stage: build
+  before_script:
+    - echo "$PYTEST_DOTENV" > .env
+  script:
+    - pip install -U setuptools
+    - pip install .[code-quality,testing]
+    - . ./code_quality_check.sh
+  only:
+    - merge_requests
