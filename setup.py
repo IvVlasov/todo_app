@@ -26,7 +26,8 @@ setup(
         "python-multipart~=0.0.9",
         "pytz~=2024.1",
         "uvicorn~=0.30.1",
-        "Jinja2==3.1.4",
+        "alembic~=1.13.1",
+        "psycopg2-binary~=2.9.9",
     ],
     extras_require={
         "code-quality": [
@@ -39,6 +40,7 @@ setup(
             "pylint_pydantic~=0.3.0",
             "types-pytz~=2024.1.0.20240203",
             "types-setuptools~=68.2.0.2",
+            "pytest-stub==1.1.0",
         ],
         "testing": [
             "httpx~=0.26.0",

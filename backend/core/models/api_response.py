@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import status as fastapi_status
 from pydantic import BaseModel
 
@@ -10,7 +12,7 @@ class APIResponse(BaseModel):
     status: str = APIResponseStatus.SUCCESS
     status_code: int = fastapi_status.HTTP_200_OK
     message: str | None = None
-    payload: BaseModel | list | dict | None = None
+    payload: Any | None = None
 
 
 class ErrorAPIResponse(APIResponse):

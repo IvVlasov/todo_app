@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     POSTGRES_MIN_CONNECTIONS: int = 2
     POSTGRES_MAX_CONNECTIONS: int = 10
 
+    JWT_SECRET_KEY: str
+    JWT_ALGORITHM: str
+    JWT_LIFETIME_MINUTES: int = 5
+
 
 @lru_cache()
 def get_settings() -> Settings:

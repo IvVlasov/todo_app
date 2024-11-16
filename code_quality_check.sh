@@ -7,5 +7,3 @@ mypy main.py
 
 pylint backend
 pylint main.py
-
-pytest

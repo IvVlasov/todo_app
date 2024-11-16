@@ -5,6 +5,8 @@ from typing import Any
 import asyncpg
 from fastapi import FastAPI
 
+from backend.settings import get_settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +60,7 @@ class PostgresConnectorInterface(ABC):
 class PostgresConnector(PostgresConnectorInterface):
     """Postgres connector service"""
 
-    def __init__(self, pool: asyncpg.pool.Pool) -> None:
+    def __init__(self, pool: asyncpg.pool.Pool | None) -> None:
         self._pool = pool
         self.connection: asyncpg.pool.PoolConnectionProxy | None = None
 
@@ -67,20 +69,32 @@ class PostgresConnector(PostgresConnectorInterface):
         if self.connection:
             logger.warning("Connection already established")
             return None
-
-        self.connection = await self._pool.acquire()
+        if self._pool:
+            self.connection = await self._pool.acquire()
+        else:
+            settings = get_settings()
+            self.connection = await asyncpg.connect(  # type: ignore
+                host=settings.POSTGRES_HOST,
+                port=settings.POSTGRES_PORT,
+                database=settings.POSTGRES_DB,
+                user=settings.POSTGRES_USER,
+                password=settings.POSTGRES_PASSWORD,
+                command_timeout=settings.POSTGRES_TIMEOUT,
+            )
 
     async def close(self) -> None:
         """Disconnect from postgres"""
         if self.connection:
-            await self._pool.release(self.connection)
+            if self._pool:
+                await self._pool.release(self.connection)
+            else:
+                await self.connection.close()
             self.connection = None
 
     async def execute_query(self, query: str, *query_params) -> None:
         """Execute query in postgres without return data"""
         if not self.connection:
             await self.connect()
-
         try:
             await self.connection.execute(query, *query_params)  # type: ignore[union-attr]
 
@@ -130,6 +144,9 @@ class PostgresConnector(PostgresConnectorInterface):
             await self.close()
 
 
-def get_postgres_connector(app: FastAPI) -> PostgresConnectorInterface:
+def get_postgres_connector(app: FastAPI | None = None) -> PostgresConnectorInterface:
     """Get Postgres connector"""
-    return PostgresConnector(pool=app.connection_pool)  # type: ignore
+    if app and hasattr(app, "connection_pool"):
+        return PostgresConnector(pool=app.connection_pool)  # type: ignore
+
+    return PostgresConnector(pool=None)
