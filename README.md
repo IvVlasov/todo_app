@@ -15,8 +15,18 @@ git clone https://github.com/IvVlasov/todo_app
 ```bash
 cd todo_app
 python3 -m venv .venv && source .venv/bin/activate
+
+```
+
+then
+```
 pip install .
-pip install -e '.[code-quality]'
+```
+
+or 
+
+```
+pip install -r requirements.txt
 ```
 
 ### 3. Start the app

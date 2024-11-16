@@ -1,7 +1,7 @@
 from setuptools import setup
 
 
-version = "0.0.1"
+version = "0.0.2"
 
 setup(
     name="todo-api",
@@ -28,6 +28,7 @@ setup(
         "uvicorn~=0.30.1",
         "alembic~=1.13.1",
         "psycopg2-binary~=2.9.9",
+        "Jinja2==3.1.4"
     ],
     extras_require={
         "code-quality": [
